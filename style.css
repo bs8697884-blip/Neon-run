@@ -1,0 +1,330 @@
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  background: #050505;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  color: white;
+}
+
+body {
+  touch-action: none;
+}
+
+#game {
+  position: fixed;
+  inset: 0;
+}
+
+canvas {
+  display: block;
+}
+
+
+/* =========================
+   HUD
+========================= */
+
+#hud {
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: 10;
+}
+
+.brand {
+  position: absolute;
+
+  top: 20px;
+  left: 22px;
+
+  font-size: 28px;
+  font-weight: 900;
+
+  letter-spacing: 4px;
+
+  text-shadow:
+    0 3px 8px black;
+}
+
+.stats {
+  position: absolute;
+
+  top: 62px;
+  left: 22px;
+
+  display: flex;
+  gap: 14px;
+
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.stats span {
+  background: rgba(0,0,0,0.65);
+
+  padding: 8px 12px;
+
+  border-radius: 8px;
+
+  backdrop-filter: blur(6px);
+}
+
+.mission {
+  position: absolute;
+
+  top: 105px;
+  left: 22px;
+
+  max-width: 330px;
+
+  padding: 10px 14px;
+
+  background:
+    rgba(0,0,0,0.65);
+
+  border-left: 4px solid white;
+
+  border-radius: 5px;
+
+  font-size: 14px;
+}
+
+.hint {
+  position: absolute;
+
+  bottom: 20px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  background: rgba(0,0,0,0.65);
+
+  padding: 8px 14px;
+
+  border-radius: 8px;
+
+  font-size: 13px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   MINIMAP
+========================= */
+
+#minimap {
+  position: absolute;
+
+  top: 20px;
+  right: 20px;
+
+  width: 170px;
+  height: 170px;
+
+  border:
+    3px solid rgba(255,255,255,0.7);
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  background: rgba(0,0,0,0.7);
+
+  box-shadow:
+    0 5px 20px rgba(0,0,0,0.7);
+}
+
+#map {
+  width: 170px;
+  height: 170px;
+}
+
+
+/* =========================
+   START SCREEN
+========================= */
+
+#overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 100;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  text-align: center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(30,30,30,0.85),
+      rgba(0,0,0,0.98)
+    );
+}
+
+#overlay h1 {
+  margin: 0;
+
+  font-size:
+    clamp(48px, 12vw, 100px);
+
+  letter-spacing: 10px;
+
+  font-weight: 900;
+
+  text-shadow:
+    0 5px 30px black;
+}
+
+#overlay p {
+  margin:
+    10px 0 30px;
+
+  color: #aaa;
+
+  font-size: 17px;
+}
+
+#start {
+  border: 0;
+
+  padding:
+    15px 38px;
+
+  border-radius: 8px;
+
+  background: white;
+
+  color: black;
+
+  font-size: 17px;
+
+  font-weight: 900;
+
+  letter-spacing: 2px;
+
+  cursor: pointer;
+}
+
+#start:active {
+  transform: scale(0.95);
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+#mobile {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 20;
+
+  pointer-events: none;
+}
+
+.movement {
+  position: absolute;
+
+  bottom: 25px;
+  left: 20px;
+
+  text-align: center;
+
+  pointer-events: auto;
+}
+
+.movement button,
+.actions button {
+  border: 0;
+
+  margin: 3px;
+
+  width: 55px;
+  height: 55px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,255,255,0.18);
+
+  color: white;
+
+  font-size: 20px;
+
+  font-weight: bold;
+
+  backdrop-filter: blur(5px);
+
+  border:
+    1px solid
+    rgba(255,255,255,0.25);
+}
+
+.movement button:active,
+.actions button:active {
+  background:
+    rgba(255,255,255,0.4);
+
+  transform: scale(0.92);
+}
+
+.actions {
+  position: absolute;
+
+  bottom: 30px;
+  right: 20px;
+
+  pointer-events: auto;
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+.actions button {
+  width: 75px;
+  height: 55px;
+
+  border-radius: 12px;
+
+  font-size: 11px;
+}
+
+
+/* Hide mobile controls on desktop */
+
+@media (min-width: 900px) {
+
+  #mobile {
+    display: none;
+  }
+
+}
