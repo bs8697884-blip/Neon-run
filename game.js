@@ -40,7 +40,17 @@ const state = {
 
     keys: {},
 
-    time: 0
+    time: 0,
+
+    joystickX: 0,
+
+    joystickY: 0,
+
+    runPressed: false,
+
+    cameraYaw: 0,
+
+    cameraPitch: 0.35
 
 };
 
@@ -108,11 +118,13 @@ renderer.shadowMap.enabled = true;
 
 document
     .getElementById("game")
-    .appendChild(renderer.domElement);
+    .appendChild(
+        renderer.domElement
+    );
 
 
 /* =========================
-   LIGHT
+   LIGHTING
 ========================= */
 
 const ambient =
@@ -143,32 +155,17 @@ scene.add(sun);
 
 
 /* =========================
-   GAME WORLD
+   WORLD
 ========================= */
 
 const city =
     createCity(scene);
 
-
-/* =========================
-   PLAYER
-========================= */
-
 const player =
     createPlayer(scene);
 
-
-/* =========================
-   VEHICLES
-========================= */
-
 const vehicles =
     createVehicles(scene);
-
-
-/* =========================
-   MISSIONS
-========================= */
 
 const missions =
     createMissionSystem(
@@ -178,22 +175,24 @@ const missions =
 
 
 /* =========================
-   KEYBOARD
+   KEYBOARD SUPPORT
 ========================= */
 
 window.addEventListener(
     "keydown",
-    function(event) {
+    event => {
 
         const key =
             event.key.toLowerCase();
 
         state.keys[key] = true;
 
+        if (key === "shift") {
+            state.runPressed = true;
+        }
+
         if (key === "e") {
-
             toggleVehicle();
-
         }
 
     }
@@ -202,106 +201,55 @@ window.addEventListener(
 
 window.addEventListener(
     "keyup",
-    function(event) {
+    event => {
 
         const key =
             event.key.toLowerCase();
 
         state.keys[key] = false;
 
+        if (key === "shift") {
+            state.runPressed = false;
+        }
+
     }
 );
 
 
 /* =========================
-   MOBILE CONTROLS
+   START GAME
 ========================= */
 
 document
-    .querySelectorAll("[data-key]")
-    .forEach(button => {
+    .getElementById("start")
+    .addEventListener(
+        "click",
+        () => {
 
-        const key =
-            button.dataset.key;
+            state.started = true;
 
+            document
+                .getElementById("overlay")
+                .style.display = "none";
 
-        button.addEventListener(
-            "pointerdown",
-            function(event) {
+            document
+                .getElementById("hint")
+                .textContent =
+                "🕹️ Move • Swipe to look • 🚗 Vehicle";
 
-                event.preventDefault();
-
-                state.keys[key] = true;
-
-                if (key === "e") {
-
-                    toggleVehicle();
-
-                }
-
-            }
-        );
-
-
-        button.addEventListener(
-            "pointerup",
-            function(event) {
-
-                event.preventDefault();
-
-                state.keys[key] = false;
-
-            }
-        );
-
-
-        button.addEventListener(
-            "pointercancel",
-            function() {
-
-                state.keys[key] = false;
-
-            }
-        );
-
-    });
+        }
+    );
 
 
 /* =========================
-   PLAY BUTTON
-========================= */
-
-const startButton =
-    document.getElementById("start");
-
-
-startButton.addEventListener(
-    "click",
-    function() {
-
-        state.started = true;
-
-        document
-            .getElementById("overlay")
-            .style.display = "none";
-
-        document
-            .getElementById("hint")
-            .textContent =
-            "WASD move • E enter car • Shift run";
-
-    }
-);
-
-
-/* =========================
-   VEHICLE TOGGLE
+   VEHICLE
 ========================= */
 
 function toggleVehicle() {
 
-    if (!state.started)
+    if (!state.started) {
         return;
+    }
 
 
     if (state.inVehicle) {
@@ -313,7 +261,7 @@ function toggleVehicle() {
         document
             .getElementById("hint")
             .textContent =
-            "WASD move • E enter car • Shift run";
+            "🕹️ Move • Swipe to look • 🚗 Vehicle";
 
         return;
 
@@ -338,11 +286,402 @@ function toggleVehicle() {
         document
             .getElementById("hint")
             .textContent =
-            "WASD drive • E exit";
+            "🕹️ Drive • 🚗 Exit";
 
     }
 
 }
+
+
+/* =========================
+   ACTION BUTTON
+========================= */
+
+document
+    .getElementById("enterButton")
+    .addEventListener(
+        "pointerdown",
+        event => {
+
+            event.preventDefault();
+
+            toggleVehicle();
+
+        }
+    );
+
+
+document
+    .getElementById("actionButton")
+    .addEventListener(
+        "pointerdown",
+        event => {
+
+            event.preventDefault();
+
+            /*
+             * Reserved for future:
+             * missions,
+             * shops,
+             * NPC interaction,
+             * pickups.
+             */
+
+        }
+    );
+
+
+/* =========================
+   RUN BUTTON
+========================= */
+
+const runButton =
+    document.getElementById(
+        "runButton"
+    );
+
+
+runButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        state.runPressed = true;
+
+    }
+);
+
+
+runButton.addEventListener(
+    "pointerup",
+    event => {
+
+        event.preventDefault();
+
+        state.runPressed = false;
+
+    }
+);
+
+
+runButton.addEventListener(
+    "pointercancel",
+    () => {
+
+        state.runPressed = false;
+
+    }
+);
+
+
+runButton.addEventListener(
+    "pointerleave",
+    () => {
+
+        state.runPressed = false;
+
+    }
+);
+
+
+/* =========================
+   VIRTUAL JOYSTICK
+========================= */
+
+const joystickZone =
+    document.getElementById(
+        "joystickZone"
+    );
+
+const joystickBase =
+    document.getElementById(
+        "joystickBase"
+    );
+
+const joystickStick =
+    document.getElementById(
+        "joystickStick"
+    );
+
+
+let joystickPointerId =
+    null;
+
+
+const joystickRadius = 45;
+
+
+function updateJoystick(
+    clientX,
+    clientY
+) {
+
+    const rect =
+        joystickBase.getBoundingClientRect();
+
+
+    const centerX =
+        rect.left +
+        rect.width / 2;
+
+
+    const centerY =
+        rect.top +
+        rect.height / 2;
+
+
+    let x =
+        clientX -
+        centerX;
+
+
+    let y =
+        clientY -
+        centerY;
+
+
+    const distance =
+        Math.sqrt(
+            x * x +
+            y * y
+        );
+
+
+    if (
+        distance >
+        joystickRadius
+    ) {
+
+        x =
+            x /
+            distance *
+            joystickRadius;
+
+        y =
+            y /
+            distance *
+            joystickRadius;
+
+    }
+
+
+    state.joystickX =
+        x /
+        joystickRadius;
+
+
+    state.joystickY =
+        y /
+        joystickRadius;
+
+
+    joystickStick.style.transform =
+        `translate(${x}px, ${y}px)`;
+
+}
+
+
+function resetJoystick() {
+
+    joystickPointerId =
+        null;
+
+    state.joystickX = 0;
+
+    state.joystickY = 0;
+
+    joystickStick.style.transform =
+        "translate(0px, 0px)";
+
+}
+
+
+joystickZone.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        joystickPointerId =
+            event.pointerId;
+
+        joystickZone.setPointerCapture(
+            event.pointerId
+        );
+
+        updateJoystick(
+            event.clientX,
+            event.clientY
+        );
+
+    }
+);
+
+
+joystickZone.addEventListener(
+    "pointermove",
+    event => {
+
+        if (
+            event.pointerId !==
+            joystickPointerId
+        ) {
+            return;
+        }
+
+        event.preventDefault();
+
+        updateJoystick(
+            event.clientX,
+            event.clientY
+        );
+
+    }
+);
+
+
+joystickZone.addEventListener(
+    "pointerup",
+    event => {
+
+        if (
+            event.pointerId ===
+            joystickPointerId
+        ) {
+
+            resetJoystick();
+
+        }
+
+    }
+);
+
+
+joystickZone.addEventListener(
+    "pointercancel",
+    resetJoystick
+);
+
+
+/* =========================
+   CAMERA TOUCH
+========================= */
+
+const cameraZone =
+    document.getElementById(
+        "cameraZone"
+    );
+
+
+let cameraPointerId =
+    null;
+
+let lastCameraX = 0;
+
+let lastCameraY = 0;
+
+
+cameraZone.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        cameraPointerId =
+            event.pointerId;
+
+        lastCameraX =
+            event.clientX;
+
+        lastCameraY =
+            event.clientY;
+
+        cameraZone.setPointerCapture(
+            event.pointerId
+        );
+
+    }
+);
+
+
+cameraZone.addEventListener(
+    "pointermove",
+    event => {
+
+        if (
+            event.pointerId !==
+            cameraPointerId
+        ) {
+            return;
+        }
+
+        event.preventDefault();
+
+
+        const dx =
+            event.clientX -
+            lastCameraX;
+
+
+        const dy =
+            event.clientY -
+            lastCameraY;
+
+
+        lastCameraX =
+            event.clientX;
+
+        lastCameraY =
+            event.clientY;
+
+
+        state.cameraYaw -=
+            dx * 0.006;
+
+
+        state.cameraPitch -=
+            dy * 0.004;
+
+
+        state.cameraPitch =
+            THREE.MathUtils.clamp(
+                state.cameraPitch,
+                -0.2,
+                0.8
+            );
+
+    }
+);
+
+
+cameraZone.addEventListener(
+    "pointerup",
+    event => {
+
+        if (
+            event.pointerId ===
+            cameraPointerId
+        ) {
+
+            cameraPointerId =
+                null;
+
+        }
+
+    }
+);
+
+
+cameraZone.addEventListener(
+    "pointercancel",
+    () => {
+
+        cameraPointerId =
+            null;
+
+    }
+);
 
 
 /* =========================
@@ -351,22 +690,33 @@ function toggleVehicle() {
 
 function updateHUD() {
 
-    document.getElementById("money")
+    document
+        .getElementById("money")
         .textContent =
-        Math.floor(state.money);
-
-    document.getElementById("health")
-        .textContent =
-        Math.max(
-            0,
-            Math.floor(state.health)
+        Math.floor(
+            state.money
         );
 
-    document.getElementById("wanted")
+
+    document
+        .getElementById("health")
         .textContent =
         Math.max(
             0,
-            Math.floor(state.wanted)
+            Math.floor(
+                state.health
+            )
+        );
+
+
+    document
+        .getElementById("wanted")
+        .textContent =
+        Math.max(
+            0,
+            Math.floor(
+                state.wanted
+            )
         );
 
 }
@@ -382,23 +732,47 @@ function updateCamera() {
         player.getCameraTarget();
 
 
+    const distance = 10;
+
+
+    const horizontal =
+        Math.cos(
+            state.cameraPitch
+        ) *
+        distance;
+
+
     const desired =
         new THREE.Vector3();
 
 
-    desired.copy(
-        target.position
-    );
+    desired.x =
+        target.position.x +
+        Math.sin(
+            state.cameraYaw
+        ) *
+        horizontal;
 
 
-    desired.y += 6;
+    desired.y =
+        target.position.y +
+        5 -
+        Math.sin(
+            state.cameraPitch
+        ) * distance;
 
-    desired.z += 10;
+
+    desired.z =
+        target.position.z +
+        Math.cos(
+            state.cameraYaw
+        ) *
+        horizontal;
 
 
     camera.position.lerp(
         desired,
-        0.08
+        0.10
     );
 
 
@@ -426,12 +800,15 @@ const minimap =
     );
 
 const map =
-    minimap.getContext("2d");
+    minimap.getContext(
+        "2d"
+    );
 
 
 function updateMinimap() {
 
     const size = 160;
+
 
     map.clearRect(
         0,
@@ -469,7 +846,8 @@ function updateMinimap() {
             (
                 i -
                 player.group.position.x
-            ) * 0.35;
+            ) *
+            0.35;
 
 
         const y =
@@ -477,7 +855,8 @@ function updateMinimap() {
             (
                 i -
                 player.group.position.z
-            ) * 0.35;
+            ) *
+            0.35;
 
 
         map.beginPath();
@@ -537,7 +916,7 @@ function updateMinimap() {
 
 window.addEventListener(
     "resize",
-    function() {
+    () => {
 
         camera.aspect =
             window.innerWidth /
@@ -579,7 +958,8 @@ function animate() {
 
     if (state.started) {
 
-        state.time += delta;
+        state.time +=
+            delta;
 
 
         updatePlayer(
