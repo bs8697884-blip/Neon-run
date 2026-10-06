@@ -1,334 +1,305 @@
 import * as THREE from
-  "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 
 export function createPlayer(scene) {
 
-  const group =
-    new THREE.Group();
+    const group =
+        new THREE.Group();
 
 
-  /* =========================
-     BODY
-  ========================= */
+    /* BODY */
 
-  const body =
-    new THREE.Mesh(
-      new THREE.CapsuleGeometry(
-        0.55,
-        1.4,
-        6,
-        10
-      ),
-      new THREE.MeshStandardMaterial({
-        color: 0x202020
-      })
+    const body =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                0.55,
+                1.3,
+                6,
+                10
+            ),
+            new THREE.MeshStandardMaterial({
+                color: 0x202020
+            })
+        );
+
+
+    body.position.y =
+        1.2;
+
+
+    body.castShadow = true;
+
+
+    /* HEAD */
+
+    const head =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.4,
+                12,
+                12
+            ),
+            new THREE.MeshStandardMaterial({
+                color: 0xc68a68
+            })
+        );
+
+
+    head.position.y =
+        2.4;
+
+
+    head.castShadow = true;
+
+
+    group.add(
+        body,
+        head
     );
 
-  body.position.y =
-    1.3;
 
-  body.castShadow = true;
-
-
-  /* =========================
-     HEAD
-  ========================= */
-
-  const head =
-    new THREE.Mesh(
-      new THREE.SphereGeometry(
-        0.4,
-        12,
-        12
-      ),
-      new THREE.MeshStandardMaterial({
-        color: 0xc78b68
-      })
+    group.position.set(
+        0,
+        0,
+        20
     );
 
-  head.position.y =
-    2.55;
 
-  head.castShadow = true;
+    scene.add(group);
 
 
-  /* =========================
-     JACKET
-  ========================= */
+    const player = {
 
-  const jacket =
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        1.1,
-        1.2,
-        0.6
-      ),
-      new THREE.MeshStandardMaterial({
-        color: 0x171717
-      })
-    );
+        group: group,
 
-  jacket.position.y =
-    1.45;
+        speed: 7,
 
-  jacket.castShadow = true;
+        sprintSpeed: 12,
+
+        vehicle: null,
+
+        exitVehicle() {
+
+            if (!this.vehicle)
+                return;
 
 
-  group.add(
-    body,
-    jacket,
-    head
-  );
+            this.group.position.copy(
+                this.vehicle.group.position
+            );
 
 
-  group.position.set(
-    0,
-    0,
-    10
-  );
+            this.group.position.x += 3;
 
 
-  scene.add(
-    group
-  );
+            this.group.visible = true;
+
+            this.vehicle = null;
+
+        },
 
 
-  const player = {
+        enterVehicle(vehicle) {
 
-    group,
+            this.vehicle =
+                vehicle;
 
-    speed: 7,
+            this.group.visible =
+                false;
 
-    sprintSpeed: 12,
-
-    vehicle: null,
-
-    previousPosition:
-      new THREE.Vector3()
-
-  };
+        },
 
 
-  player.exitVehicle =
-    function() {
+        getCameraTarget() {
 
-      if (!player.vehicle)
-        return;
+            if (this.vehicle) {
 
+                return this.vehicle.group;
 
-      player.group.position.copy(
-        player.vehicle.group.position
-      );
+            }
 
-      player.group.position.x +=
-        3;
+            return this.group;
 
-
-      player.vehicle =
-        null;
+        }
 
     };
 
 
-  player.enterVehicle =
-    function(vehicle) {
-
-      player.vehicle =
-        vehicle;
-
-      player.group.visible =
-        false;
-
-    };
-
-
-  player.getCameraTarget =
-    function() {
-
-      if (
-        player.vehicle
-      ) {
-
-        return player.vehicle.group;
-
-      }
-
-      return player.group;
-
-    };
-
-
-  return player;
+    return player;
 }
 
 
 /* =========================
-   PLAYER UPDATE
+   UPDATE PLAYER
 ========================= */
 
 export function updatePlayer(
-  player,
-  state,
-  delta,
-  vehicles
+    player,
+    state,
+    delta
 ) {
 
-  if (
-    state.inVehicle &&
-    player.vehicle
-  ) {
+    if (
+        state.inVehicle &&
+        player.vehicle
+    ) {
 
-    updateVehiclePlayer(
-      player,
-      state,
-      delta
-    );
+        updateVehicleMovement(
+            player,
+            state,
+            delta
+        );
 
-    return;
+        return;
 
-  }
-
-
-  const direction =
-    new THREE.Vector3();
+    }
 
 
-  if (state.keys["w"])
-    direction.z -= 1;
-
-  if (state.keys["s"])
-    direction.z += 1;
-
-  if (state.keys["a"])
-    direction.x -= 1;
-
-  if (state.keys["d"])
-    direction.x += 1;
+    const direction =
+        new THREE.Vector3();
 
 
-  if (
-    direction.lengthSq() > 0
-  ) {
+    if (state.keys["w"])
+        direction.z -= 1;
+
+    if (state.keys["s"])
+        direction.z += 1;
+
+    if (state.keys["a"])
+        direction.x -= 1;
+
+    if (state.keys["d"])
+        direction.x += 1;
+
+
+    if (
+        direction.lengthSq() === 0
+    ) {
+
+        return;
+
+    }
+
 
     direction.normalize();
 
 
     const speed =
-      state.keys["shift"]
-        ? player.sprintSpeed
-        : player.speed;
+        state.keys["shift"]
+            ? player.sprintSpeed
+            : player.speed;
 
 
     player.group.position.add(
-      direction.multiplyScalar(
-        speed * delta
-      )
+        direction.multiplyScalar(
+            speed * delta
+        )
     );
 
 
     player.group.rotation.y =
-      Math.atan2(
-        direction.x,
-        direction.z
-      );
-
-  }
+        Math.atan2(
+            direction.x,
+            direction.z
+        );
 
 }
 
 
 /* =========================
-   VEHICLE CONTROL
+   VEHICLE MOVEMENT
 ========================= */
 
-function updateVehiclePlayer(
-  player,
-  state,
-  delta
+function updateVehicleMovement(
+    player,
+    state,
+    delta
 ) {
 
-  const vehicle =
-    player.vehicle;
+    const vehicle =
+        player.vehicle;
 
 
-  if (!vehicle)
-    return;
+    if (!vehicle)
+        return;
 
 
-  if (state.keys["w"]) {
+    if (state.keys["w"]) {
 
-    vehicle.speed +=
-      12 * delta;
+        vehicle.speed +=
+            18 * delta;
 
-  }
-
-
-  if (state.keys["s"]) {
-
-    vehicle.speed -=
-      15 * delta;
-
-  }
+    }
 
 
-  vehicle.speed =
-    THREE.MathUtils.clamp(
-      vehicle.speed,
-      -10,
-      35
+    if (state.keys["s"]) {
+
+        vehicle.speed -=
+            20 * delta;
+
+    }
+
+
+    if (
+        !state.keys["w"] &&
+        !state.keys["s"]
+    ) {
+
+        vehicle.speed *=
+            0.97;
+
+    }
+
+
+    vehicle.speed =
+        THREE.MathUtils.clamp(
+            vehicle.speed,
+            -12,
+            35
+        );
+
+
+    let steering = 0;
+
+
+    if (state.keys["a"])
+        steering = 1;
+
+    if (state.keys["d"])
+        steering = -1;
+
+
+    vehicle.group.rotation.y +=
+        steering *
+        vehicle.speed *
+        0.025 *
+        delta;
+
+
+    const forward =
+        new THREE.Vector3(
+            0,
+            0,
+            1
+        );
+
+
+    forward.applyQuaternion(
+        vehicle.group.quaternion
     );
 
 
-  if (!state.keys["w"] &&
-      !state.keys["s"]) {
-
-    vehicle.speed *=
-      0.96;
-
-  }
-
-
-  let steering = 0;
-
-
-  if (state.keys["a"])
-    steering = 1;
-
-  if (state.keys["d"])
-    steering = -1;
-
-
-  vehicle.group.rotation.y +=
-    steering *
-    vehicle.speed *
-    0.025 *
-    delta;
-
-
-  const forward =
-    new THREE.Vector3(
-      0,
-      0,
-      1
+    vehicle.group.position.add(
+        forward.multiplyScalar(
+            vehicle.speed *
+            delta
+        )
     );
 
 
-  forward.applyQuaternion(
-    vehicle.group.quaternion
-  );
-
-
-  vehicle.group.position.add(
-    forward.multiplyScalar(
-      vehicle.speed *
-      delta
-    )
-  );
-
-
-  player.group.position.copy(
-    vehicle.group.position
-  );
+    player.group.position.copy(
+        vehicle.group.position
+    );
 
 }
