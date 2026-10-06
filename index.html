@@ -1,131 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width,
-    initial-scale=1,
-    maximum-scale=1,
-    user-scalable=no"
-  >
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
 
-  <title>CITY HEAT</title>
+    <title>CITY HEAT</title>
 
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div id="game"></div>
+    <div id="game"></div>
 
-  <!-- HUD -->
-  <div id="hud">
+    <!-- HUD -->
+    <div id="hud">
 
-    <div class="brand">
-      CITY HEAT
-    </div>
+        <div id="brand">CITY HEAT</div>
 
-    <div class="stats">
+        <div id="stats">
+            <div>💵 $<span id="money">250</span></div>
+            <div>❤️ <span id="health">100</span></div>
+            <div>⭐ <span id="wanted">0</span></div>
+        </div>
 
-      <span>
-        💵 $<b id="money">250</b>
-      </span>
+        <div id="mission">
+            Explore the city
+        </div>
 
-      <span>
-        ❤️ <b id="health">100</b>
-      </span>
+        <div id="hint">
+            WASD to move
+        </div>
 
-      <span>
-        ⭐ <b id="wanted">0</b>
-      </span>
-
-    </div>
-
-    <div
-      class="mission"
-      id="mission"
-    >
-      MISSION: Explore the city
-    </div>
-
-    <div
-      class="hint"
-      id="hint"
-    >
-      WASD move • E enter car • Shift sprint
-    </div>
-
-    <div id="minimap">
-
-      <canvas
-        id="map"
-        width="170"
-        height="170"
-      ></canvas>
+        <canvas id="minimap" width="160" height="160"></canvas>
 
     </div>
 
-  </div>
 
+    <!-- START SCREEN -->
+    <div id="overlay">
 
-  <!-- MOBILE CONTROLS -->
+        <div id="title">
+            CITY HEAT
+        </div>
 
-  <div id="mobile">
+        <div id="subtitle">
+            OPEN WORLD CITY
+        </div>
 
-    <div class="movement">
-
-      <button data-key="w">▲</button>
-
-      <div>
-
-        <button data-key="a">◀</button>
-
-        <button data-key="s">▼</button>
-
-        <button data-key="d">▶</button>
-
-      </div>
+        <button id="start">
+            PLAY
+        </button>
 
     </div>
 
-    <div class="actions">
 
-      <button data-key="e">
-        ENTER
-      </button>
+    <!-- MOBILE CONTROLS -->
+    <div id="mobileControls">
 
-      <button data-key="shift">
-        RUN
-      </button>
+        <div id="movement">
+
+            <button data-key="w">▲</button>
+
+            <div>
+                <button data-key="a">◀</button>
+                <button data-key="s">▼</button>
+                <button data-key="d">▶</button>
+            </div>
+
+        </div>
+
+
+        <div id="actions">
+
+            <button data-key="shift">
+                RUN
+            </button>
+
+            <button data-key="e">
+                ENTER
+            </button>
+
+        </div>
 
     </div>
 
-  </div>
 
-
-  <!-- START SCREEN -->
-
-  <div id="overlay">
-
-    <h1>CITY HEAT</h1>
-
-    <p>
-      Open-world 3D city
-    </p>
-
-    <button id="start">
-      START GAME
-    </button>
-
-  </div>
-
-
-  <script
-    type="module"
-    src="game.js"
-  ></script>
+    <script type="module" src="./game.js"></script>
 
 </body>
 </html>
