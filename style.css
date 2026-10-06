@@ -1,37 +1,43 @@
 * {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html,
 body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+    margin: 0;
+    padding: 0;
 
-  background: #050505;
+    width: 100%;
+    height: 100%;
 
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+    overflow: hidden;
 
-  color: white;
+    background: #000;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    touch-action: none;
 }
 
 body {
-  touch-action: none;
+    color: white;
 }
 
 #game {
-  position: fixed;
-  inset: 0;
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 1;
 }
 
-canvas {
-  display: block;
+#game canvas {
+    display: block;
 }
 
 
@@ -40,89 +46,88 @@ canvas {
 ========================= */
 
 #hud {
-  position: fixed;
-  inset: 0;
+    position: fixed;
 
-  pointer-events: none;
+    left: 0;
+    top: 0;
 
-  z-index: 10;
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+
+    z-index: 10;
 }
 
-.brand {
-  position: absolute;
+#brand {
+    position: absolute;
 
-  top: 20px;
-  left: 22px;
+    left: 20px;
+    top: 18px;
 
-  font-size: 28px;
-  font-weight: 900;
+    font-size: 27px;
+    font-weight: 900;
 
-  letter-spacing: 4px;
+    letter-spacing: 4px;
 
-  text-shadow:
-    0 3px 8px black;
+    text-shadow:
+        0 3px 10px #000;
 }
 
-.stats {
-  position: absolute;
+#stats {
+    position: absolute;
 
-  top: 62px;
-  left: 22px;
+    left: 20px;
+    top: 60px;
 
-  display: flex;
-  gap: 14px;
+    display: flex;
 
-  font-size: 16px;
-  font-weight: bold;
+    gap: 8px;
 }
 
-.stats span {
-  background: rgba(0,0,0,0.65);
+#stats div {
+    padding: 8px 10px;
 
-  padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.65);
 
-  border-radius: 8px;
+    border-radius: 7px;
 
-  backdrop-filter: blur(6px);
+    font-size: 14px;
+    font-weight: bold;
 }
 
-.mission {
-  position: absolute;
+#mission {
+    position: absolute;
 
-  top: 105px;
-  left: 22px;
+    left: 20px;
+    top: 105px;
 
-  max-width: 330px;
+    padding: 9px 13px;
 
-  padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.65);
 
-  background:
-    rgba(0,0,0,0.65);
+    border-left: 4px solid white;
 
-  border-left: 4px solid white;
+    border-radius: 5px;
 
-  border-radius: 5px;
-
-  font-size: 14px;
+    font-size: 14px;
 }
 
-.hint {
-  position: absolute;
+#hint {
+    position: absolute;
 
-  bottom: 20px;
-  left: 50%;
+    bottom: 20px;
+    left: 50%;
 
-  transform: translateX(-50%);
+    transform: translateX(-50%);
 
-  background: rgba(0,0,0,0.65);
+    padding: 8px 13px;
 
-  padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.65);
 
-  border-radius: 8px;
+    border-radius: 7px;
 
-  font-size: 13px;
-
-  text-align: center;
+    font-size: 13px;
 }
 
 
@@ -131,30 +136,19 @@ canvas {
 ========================= */
 
 #minimap {
-  position: absolute;
+    position: absolute;
 
-  top: 20px;
-  right: 20px;
+    right: 20px;
+    top: 20px;
 
-  width: 170px;
-  height: 170px;
+    width: 160px;
+    height: 160px;
 
-  border:
-    3px solid rgba(255,255,255,0.7);
+    border: 3px solid rgba(255,255,255,0.8);
 
-  border-radius: 50%;
+    border-radius: 50%;
 
-  overflow: hidden;
-
-  background: rgba(0,0,0,0.7);
-
-  box-shadow:
-    0 5px 20px rgba(0,0,0,0.7);
-}
-
-#map {
-  width: 170px;
-  height: 170px;
+    background: #182018;
 }
 
 
@@ -163,168 +157,154 @@ canvas {
 ========================= */
 
 #overlay {
-  position: fixed;
+    position: fixed;
 
-  inset: 0;
+    inset: 0;
 
-  z-index: 100;
+    z-index: 100;
 
-  display: flex;
+    display: flex;
 
-  flex-direction: column;
+    flex-direction: column;
 
-  justify-content: center;
+    align-items: center;
 
-  align-items: center;
+    justify-content: center;
 
-  text-align: center;
+    background:
+        radial-gradient(
+            circle,
+            #242424 0%,
+            #090909 55%,
+            #000 100%
+        );
 
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(30,30,30,0.85),
-      rgba(0,0,0,0.98)
-    );
+    text-align: center;
 }
 
-#overlay h1 {
-  margin: 0;
+#title {
+    font-size: clamp(50px, 13vw, 110px);
 
-  font-size:
-    clamp(48px, 12vw, 100px);
+    font-weight: 900;
 
-  letter-spacing: 10px;
+    letter-spacing: 10px;
 
-  font-weight: 900;
-
-  text-shadow:
-    0 5px 30px black;
+    text-shadow:
+        0 5px 25px #000;
 }
 
-#overlay p {
-  margin:
-    10px 0 30px;
+#subtitle {
+    margin-top: 5px;
+    margin-bottom: 35px;
 
-  color: #aaa;
+    color: #aaa;
 
-  font-size: 17px;
+    letter-spacing: 5px;
 }
 
 #start {
-  border: 0;
+    padding: 15px 45px;
 
-  padding:
-    15px 38px;
+    border: none;
 
-  border-radius: 8px;
+    border-radius: 8px;
 
-  background: white;
+    background: white;
 
-  color: black;
+    color: black;
 
-  font-size: 17px;
+    font-size: 17px;
 
-  font-weight: 900;
+    font-weight: 900;
 
-  letter-spacing: 2px;
-
-  cursor: pointer;
+    letter-spacing: 2px;
 }
 
 #start:active {
-  transform: scale(0.95);
+    transform: scale(0.94);
 }
 
 
 /* =========================
-   MOBILE
+   MOBILE CONTROLS
 ========================= */
 
-#mobile {
-  position: fixed;
+#mobileControls {
+    position: fixed;
 
-  inset: 0;
+    inset: 0;
 
-  z-index: 20;
+    z-index: 30;
 
-  pointer-events: none;
+    pointer-events: none;
 }
 
-.movement {
-  position: absolute;
+#movement {
+    position: absolute;
 
-  bottom: 25px;
-  left: 20px;
+    bottom: 22px;
+    left: 20px;
 
-  text-align: center;
+    pointer-events: auto;
 
-  pointer-events: auto;
+    text-align: center;
 }
 
-.movement button,
-.actions button {
-  border: 0;
+#movement button,
+#actions button {
+    width: 56px;
+    height: 56px;
 
-  margin: 3px;
+    margin: 3px;
 
-  width: 55px;
-  height: 55px;
+    border-radius: 50%;
 
-  border-radius: 50%;
+    border:
+        1px solid
+        rgba(255,255,255,0.25);
 
-  background:
-    rgba(255,255,255,0.18);
+    background:
+        rgba(255,255,255,0.16);
 
-  color: white;
+    color: white;
 
-  font-size: 20px;
+    font-size: 19px;
 
-  font-weight: bold;
+    font-weight: bold;
 
-  backdrop-filter: blur(5px);
-
-  border:
-    1px solid
-    rgba(255,255,255,0.25);
+    backdrop-filter: blur(8px);
 }
 
-.movement button:active,
-.actions button:active {
-  background:
-    rgba(255,255,255,0.4);
+#actions {
+    position: absolute;
 
-  transform: scale(0.92);
+    right: 20px;
+    bottom: 25px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    pointer-events: auto;
 }
 
-.actions {
-  position: absolute;
+#actions button {
+    width: 75px;
 
-  bottom: 30px;
-  right: 20px;
+    border-radius: 12px;
 
-  pointer-events: auto;
-
-  display: flex;
-
-  flex-direction: column;
-}
-
-.actions button {
-  width: 75px;
-  height: 55px;
-
-  border-radius: 12px;
-
-  font-size: 11px;
+    font-size: 11px;
 }
 
 
-/* Hide mobile controls on desktop */
+/* =========================
+   DESKTOP
+========================= */
 
-@media (min-width: 900px) {
+@media (min-width: 800px) {
 
-  #mobile {
-    display: none;
-  }
+    #mobileControls {
+        display: none;
+    }
 
 }
