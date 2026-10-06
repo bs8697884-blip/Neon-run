@@ -1,35 +1,64 @@
 import * as THREE from
-  "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 
 export function createMissionSystem(
-  scene,
-  state
+    scene,
+    state
 ) {
 
-  const missions = {
+    const mission = {
 
-    active: false,
+        active: false,
 
-    index: 0,
+        target:
+            new THREE.Vector3(),
 
-    target:
-      new THREE.Vector3(),
+        marker: null,
 
-    timer: 0,
+        timer: 0,
 
-    completed: 0
+        completed: 0
 
-  };
-
-
-  startMission(
-    missions,
-    state
-  );
+    };
 
 
-  return missions;
+    /* MISSION MARKER */
+
+    const marker =
+        new THREE.Mesh(
+            new THREE.TorusGeometry(
+                5,
+                0.7,
+                12,
+                32
+            ),
+            new THREE.MeshBasicMaterial({
+                color: 0xffff00
+            })
+        );
+
+
+    marker.rotation.x =
+        Math.PI / 2;
+
+
+    marker.visible = false;
+
+
+    scene.add(marker);
+
+
+    mission.marker =
+        marker;
+
+
+    startMission(
+        mission
+    );
+
+
+    return mission;
 }
 
 
@@ -38,38 +67,51 @@ export function createMissionSystem(
 ========================= */
 
 function startMission(
-  missions,
-  state
+    mission
 ) {
 
-  missions.active =
-    true;
-
-  missions.timer =
-    90;
+    mission.active =
+        true;
 
 
-  missions.target.set(
-    THREE.MathUtils.randFloat(
-      -400,
-      400
-    ),
-    0,
-    THREE.MathUtils.randFloat(
-      -400,
-      400
-    )
-  );
+    mission.timer =
+        90;
 
 
-  const mission =
-    document.getElementById(
-      "mission"
+    mission.target.set(
+        THREE.MathUtils.randFloat(
+            -400,
+            400
+        ),
+        0.2,
+        THREE.MathUtils.randFloat(
+            -400,
+            400
+        )
     );
 
 
-  mission.textContent =
-    "MISSION: Reach the marked location";
+    mission.marker.position.copy(
+        mission.target
+    );
+
+
+    mission.marker.visible =
+        true;
+
+
+    const text =
+        document.getElementById(
+            "mission"
+        );
+
+
+    if (text) {
+
+        text.textContent =
+            "MISSION: Reach the yellow marker";
+
+    }
 
 }
 
@@ -79,123 +121,128 @@ function startMission(
 ========================= */
 
 export function updateMissions(
-  missions,
-  state,
-  delta,
-  player
+    mission,
+    state,
+    delta,
+    player
 ) {
 
-  if (
-    !missions.active
-  )
-    return;
+    if (
+        !mission.active
+    ) {
+
+        return;
+
+    }
 
 
-  missions.timer -=
-    delta;
+    mission.timer -=
+        delta;
 
 
-  const distance =
-    player.group.position.distanceTo(
-      missions.target
-    );
+    mission.marker.rotation.z +=
+        delta * 2;
 
 
-  /* Mission completion */
-
-  if (
-    distance < 12
-  ) {
-
-    missions.active =
-      false;
-
-    missions.completed++;
-
-
-    const reward =
-      100 +
-      missions.completed * 50;
-
-
-    state.money +=
-      reward;
-
-
-    state.wanted =
-      Math.max(
-        0,
-        state.wanted - 1
-      );
-
-
-    document.getElementById(
-      "mission"
-    ).textContent =
-      `MISSION COMPLETE +$${reward}`;
-
-
-    setTimeout(
-      () => {
-
-        startMission(
-          missions,
-          state
+    const distance =
+        player.group.position.distanceTo(
+            mission.target
         );
 
-      },
-      2500
-    );
 
-  }
+    if (
+        distance < 10
+    ) {
 
-
-  /* Mission timeout */
-
-  if (
-    missions.timer <= 0
-  ) {
-
-    missions.active =
-      false;
+        mission.active =
+            false;
 
 
-    document.getElementById(
-      "mission"
-    ).textContent =
-      "MISSION FAILED";
+        mission.marker.visible =
+            false;
 
 
-    setTimeout(
-      () => {
+        mission.completed++;
 
-        startMission(
-          missions,
-          state
+
+        const reward =
+            100 +
+            mission.completed * 50;
+
+
+        state.money +=
+            reward;
+
+
+        const text =
+            document.getElementById(
+                "mission"
+            );
+
+
+        if (text) {
+
+            text.textContent =
+                "MISSION COMPLETE! +$" +
+                reward;
+
+        }
+
+
+        setTimeout(
+            () => {
+
+                startMission(
+                    mission
+                );
+
+            },
+            2000
         );
 
-      },
-      2000
-    );
 
-  }
+        return;
+
+    }
 
 
-  /* Wanted system */
+    if (
+        mission.timer <= 0
+    ) {
 
-  if (
-    state.wanted > 0
-  ) {
+        mission.active =
+            false;
 
-    state.wanted -=
-      0.01 * delta;
 
-    state.wanted =
-      Math.max(
-        0,
-        state.wanted
-      );
+        mission.marker.visible =
+            false;
 
-  }
+
+        const text =
+            document.getElementById(
+                "mission"
+            );
+
+
+        if (text) {
+
+            text.textContent =
+                "MISSION FAILED";
+
+        }
+
+
+        setTimeout(
+            () => {
+
+                startMission(
+                    mission
+                );
+
+            },
+            2000
+        );
+
+    }
 
 }
