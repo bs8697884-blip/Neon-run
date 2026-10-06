@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -15,20 +16,30 @@ body {
 
     background: #000;
 
-    font-family: Arial, Helvetica, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
     touch-action: none;
+
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 body {
     color: white;
 }
 
+
+/* =========================
+   GAME
+========================= */
+
 #game {
     position: fixed;
 
-    left: 0;
-    top: 0;
+    inset: 0;
 
     width: 100%;
     height: 100%;
@@ -48,24 +59,21 @@ body {
 #hud {
     position: fixed;
 
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    pointer-events: none;
+    inset: 0;
 
     z-index: 10;
+
+    pointer-events: none;
 }
 
 #brand {
     position: absolute;
 
-    left: 20px;
     top: 18px;
+    left: 20px;
 
     font-size: 27px;
+
     font-weight: 900;
 
     letter-spacing: 4px;
@@ -77,8 +85,8 @@ body {
 #stats {
     position: absolute;
 
-    left: 20px;
     top: 60px;
+    left: 20px;
 
     display: flex;
 
@@ -88,25 +96,29 @@ body {
 #stats div {
     padding: 8px 10px;
 
-    background: rgba(0, 0, 0, 0.65);
+    background:
+        rgba(0, 0, 0, 0.65);
 
     border-radius: 7px;
 
     font-size: 14px;
+
     font-weight: bold;
 }
 
 #mission {
     position: absolute;
 
-    left: 20px;
     top: 105px;
+    left: 20px;
 
     padding: 9px 13px;
 
-    background: rgba(0, 0, 0, 0.65);
+    background:
+        rgba(0, 0, 0, 0.65);
 
-    border-left: 4px solid white;
+    border-left:
+        4px solid white;
 
     border-radius: 5px;
 
@@ -116,35 +128,34 @@ body {
 #hint {
     position: absolute;
 
-    bottom: 20px;
+    bottom: 18px;
     left: 50%;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
     padding: 8px 13px;
 
-    background: rgba(0, 0, 0, 0.65);
+    background:
+        rgba(0, 0, 0, 0.65);
 
     border-radius: 7px;
 
     font-size: 13px;
 }
 
-
-/* =========================
-   MINIMAP
-========================= */
-
 #minimap {
     position: absolute;
 
-    right: 20px;
     top: 20px;
+    right: 20px;
 
     width: 160px;
     height: 160px;
 
-    border: 3px solid rgba(255,255,255,0.8);
+    border:
+        3px solid
+        rgba(255,255,255,0.8);
 
     border-radius: 50%;
 
@@ -183,7 +194,8 @@ body {
 }
 
 #title {
-    font-size: clamp(50px, 13vw, 110px);
+    font-size:
+        clamp(50px, 13vw, 110px);
 
     font-weight: 900;
 
@@ -203,21 +215,27 @@ body {
 }
 
 #start {
+    min-width: 170px;
+
+    min-height: 58px;
+
     padding: 15px 45px;
 
     border: none;
 
-    border-radius: 8px;
+    border-radius: 10px;
 
     background: white;
 
     color: black;
 
-    font-size: 17px;
+    font-size: 18px;
 
     font-weight: 900;
 
     letter-spacing: 2px;
+
+    touch-action: manipulation;
 }
 
 #start:active {
@@ -226,74 +244,230 @@ body {
 
 
 /* =========================
-   MOBILE CONTROLS
+   TOUCH SYSTEM
 ========================= */
 
-#mobileControls {
+#touchControls {
     position: fixed;
 
     inset: 0;
 
-    z-index: 30;
+    z-index: 40;
 
     pointer-events: none;
+
+    touch-action: none;
 }
 
-#movement {
+
+/* =========================
+   JOYSTICK
+========================= */
+
+#joystickZone {
     position: absolute;
 
-    bottom: 22px;
-    left: 20px;
+    left: 0;
+    bottom: 0;
+
+    width: 48%;
+    height: 45%;
 
     pointer-events: auto;
 
-    text-align: center;
+    touch-action: none;
 }
 
-#movement button,
-#actions button {
-    width: 56px;
-    height: 56px;
+#joystickBase {
+    position: absolute;
 
-    margin: 3px;
+    left: 42px;
+    bottom: 42px;
+
+    width: 140px;
+    height: 140px;
 
     border-radius: 50%;
 
-    border:
-        1px solid
-        rgba(255,255,255,0.25);
-
     background:
-        rgba(255,255,255,0.16);
+        rgba(255,255,255,0.10);
 
-    color: white;
+    border:
+        2px solid
+        rgba(255,255,255,0.28);
 
-    font-size: 19px;
+    backdrop-filter:
+        blur(6px);
 
-    font-weight: bold;
+    display: flex;
 
-    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
 }
 
-#actions {
+#joystickStick {
+    width: 66px;
+    height: 66px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.30);
+
+    border:
+        2px solid
+        rgba(255,255,255,0.65);
+
+    box-shadow:
+        0 5px 20px
+        rgba(0,0,0,0.4);
+
+    transform:
+        translate(0, 0);
+
+    transition:
+        transform 0.04s linear;
+}
+
+
+/* =========================
+   CAMERA
+========================= */
+
+#cameraZone {
     position: absolute;
 
-    right: 20px;
-    bottom: 25px;
+    top: 0;
+    right: 0;
+
+    width: 55%;
+    height: 75%;
+
+    pointer-events: auto;
+
+    touch-action: none;
+}
+
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+
+#actionControls {
+    position: absolute;
+
+    right: 28px;
+    bottom: 30px;
 
     display: flex;
 
     flex-direction: column;
 
+    align-items: center;
+
+    gap: 12px;
+
     pointer-events: auto;
 }
 
-#actions button {
-    width: 75px;
+#actionControls button {
+    width: 72px;
+    height: 72px;
 
-    border-radius: 12px;
+    border-radius: 50%;
 
-    font-size: 11px;
+    border:
+        2px solid
+        rgba(255,255,255,0.30);
+
+    background:
+        rgba(20,20,20,0.60);
+
+    color: white;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    backdrop-filter:
+        blur(8px);
+
+    touch-action: manipulation;
+
+    -webkit-user-select: none;
+}
+
+#actionControls button:active {
+    transform: scale(0.88);
+
+    background:
+        rgba(255,255,255,0.28);
+}
+
+#actionButton {
+    width: 82px !important;
+    height: 82px !important;
+}
+
+
+/* =========================
+   SMALL IPADS / PHONES
+========================= */
+
+@media (max-width: 700px) {
+
+    #brand {
+        font-size: 20px;
+        letter-spacing: 3px;
+    }
+
+    #stats {
+        top: 50px;
+    }
+
+    #stats div {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+
+    #mission {
+        top: 90px;
+        font-size: 12px;
+    }
+
+    #minimap {
+        width: 120px;
+        height: 120px;
+    }
+
+    #joystickBase {
+        width: 120px;
+        height: 120px;
+
+        left: 25px;
+        bottom: 25px;
+    }
+
+    #joystickStick {
+        width: 58px;
+        height: 58px;
+    }
+
+    #actionControls {
+        right: 18px;
+        bottom: 20px;
+    }
+
+    #actionControls button {
+        width: 62px;
+        height: 62px;
+    }
+
+    #actionButton {
+        width: 72px !important;
+        height: 72px !important;
+    }
+
 }
 
 
@@ -301,9 +475,9 @@ body {
    DESKTOP
 ========================= */
 
-@media (min-width: 800px) {
+@media (min-width: 900px) {
 
-    #mobileControls {
+    #touchControls {
         display: none;
     }
 
