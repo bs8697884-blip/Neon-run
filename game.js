@@ -1,24 +1,24 @@
 import * as THREE from
-  "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 import {
-  createCity,
-  updateCity
+    createCity,
+    updateCity
 } from "./world.js";
 
 import {
-  createPlayer,
-  updatePlayer
+    createPlayer,
+    updatePlayer
 } from "./player.js";
 
 import {
-  createVehicles,
-  updateVehicles
-} from "./vehicles.js";
+    createVehicles,
+    updateVehicles
+} from "./vehicle.js";
 
 import {
-  createMissionSystem,
-  updateMissions
+    createMissionSystem,
+    updateMissions
 } from "./missions.js";
 
 
@@ -28,19 +28,19 @@ import {
 
 const state = {
 
-  money: 250,
+    started: false,
 
-  health: 100,
+    money: 250,
 
-  wanted: 0,
+    health: 100,
 
-  started: false,
+    wanted: 0,
 
-  inVehicle: false,
+    inVehicle: false,
 
-  keys: {},
+    keys: {},
 
-  time: 0
+    time: 0
 
 };
 
@@ -50,17 +50,17 @@ const state = {
 ========================= */
 
 const scene =
-  new THREE.Scene();
+    new THREE.Scene();
 
 scene.background =
-  new THREE.Color(0x87a8c4);
+    new THREE.Color(0x8faabd);
 
 scene.fog =
-  new THREE.Fog(
-    0x87a8c4,
-    100,
-    800
-  );
+    new THREE.Fog(
+        0x8faabd,
+        100,
+        650
+    );
 
 
 /* =========================
@@ -68,18 +68,18 @@ scene.fog =
 ========================= */
 
 const camera =
-  new THREE.PerspectiveCamera(
-    65,
-    window.innerWidth /
-      window.innerHeight,
-    0.1,
-    1500
-  );
+    new THREE.PerspectiveCamera(
+        65,
+        window.innerWidth /
+        window.innerHeight,
+        0.1,
+        1000
+    );
 
 camera.position.set(
-  0,
-  8,
-  12
+    0,
+    7,
+    12
 );
 
 
@@ -88,72 +88,66 @@ camera.position.set(
 ========================= */
 
 const renderer =
-  new THREE.WebGLRenderer({
-    antialias: true
-  });
-
-renderer.setPixelRatio(
-  Math.min(
-    window.devicePixelRatio,
-    2
-  )
-);
+    new THREE.WebGLRenderer({
+        antialias: true
+    });
 
 renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
+    window.innerWidth,
+    window.innerHeight
+);
+
+renderer.setPixelRatio(
+    Math.min(
+        window.devicePixelRatio,
+        2
+    )
 );
 
 renderer.shadowMap.enabled = true;
 
-renderer.shadowMap.type =
-  THREE.PCFSoftShadowMap;
-
 document
-  .getElementById("game")
-  .appendChild(renderer.domElement);
+    .getElementById("game")
+    .appendChild(renderer.domElement);
 
 
 /* =========================
-   LIGHTING
+   LIGHT
 ========================= */
 
 const ambient =
-  new THREE.HemisphereLight(
-    0xffffff,
-    0x334455,
-    2
-  );
+    new THREE.HemisphereLight(
+        0xffffff,
+        0x344455,
+        2
+    );
 
 scene.add(ambient);
 
 
 const sun =
-  new THREE.DirectionalLight(
-    0xffffff,
-    3
-  );
+    new THREE.DirectionalLight(
+        0xffffff,
+        3
+    );
 
 sun.position.set(
-  100,
-  200,
-  100
+    150,
+    250,
+    100
 );
 
 sun.castShadow = true;
-
-sun.shadow.mapSize.width = 2048;
-sun.shadow.mapSize.height = 2048;
 
 scene.add(sun);
 
 
 /* =========================
-   CITY
+   GAME WORLD
 ========================= */
 
 const city =
-  createCity(scene);
+    createCity(scene);
 
 
 /* =========================
@@ -161,7 +155,7 @@ const city =
 ========================= */
 
 const player =
-  createPlayer(scene);
+    createPlayer(scene);
 
 
 /* =========================
@@ -169,7 +163,7 @@ const player =
 ========================= */
 
 const vehicles =
-  createVehicles(scene);
+    createVehicles(scene);
 
 
 /* =========================
@@ -177,142 +171,176 @@ const vehicles =
 ========================= */
 
 const missions =
-  createMissionSystem(
-    scene,
-    state
-  );
+    createMissionSystem(
+        scene,
+        state
+    );
 
 
 /* =========================
-   INPUT
+   KEYBOARD
 ========================= */
 
 window.addEventListener(
-  "keydown",
-  event => {
+    "keydown",
+    function(event) {
 
-    state.keys[
-      event.key.toLowerCase()
-    ] = true;
-
-    if (
-      event.key.toLowerCase() === "e"
-    ) {
-
-      toggleVehicle();
-
-    }
-
-  }
-);
-
-
-window.addEventListener(
-  "keyup",
-  event => {
-
-    state.keys[
-      event.key.toLowerCase()
-    ] = false;
-
-  }
-);
-
-
-/* =========================
-   MOBILE INPUT
-========================= */
-
-document
-  .querySelectorAll(
-    "[data-key]"
-  )
-  .forEach(button => {
-
-    const key =
-      button.dataset.key;
-
-    button.addEventListener(
-      "pointerdown",
-      event => {
-
-        event.preventDefault();
+        const key =
+            event.key.toLowerCase();
 
         state.keys[key] = true;
 
-      }
-    );
+        if (key === "e") {
 
-    button.addEventListener(
-      "pointerup",
-      event => {
+            toggleVehicle();
 
-        event.preventDefault();
+        }
 
-        state.keys[key] = false;
+    }
+);
 
-      }
-    );
 
-    button.addEventListener(
-      "pointercancel",
-      () => {
+window.addEventListener(
+    "keyup",
+    function(event) {
 
-        state.keys[key] = false;
-
-      }
-    );
-
-    button.addEventListener(
-      "pointerleave",
-      () => {
+        const key =
+            event.key.toLowerCase();
 
         state.keys[key] = false;
 
-      }
-    );
-
-  });
+    }
+);
 
 
 /* =========================
-   VEHICLE ENTER / EXIT
+   MOBILE CONTROLS
+========================= */
+
+document
+    .querySelectorAll("[data-key]")
+    .forEach(button => {
+
+        const key =
+            button.dataset.key;
+
+
+        button.addEventListener(
+            "pointerdown",
+            function(event) {
+
+                event.preventDefault();
+
+                state.keys[key] = true;
+
+                if (key === "e") {
+
+                    toggleVehicle();
+
+                }
+
+            }
+        );
+
+
+        button.addEventListener(
+            "pointerup",
+            function(event) {
+
+                event.preventDefault();
+
+                state.keys[key] = false;
+
+            }
+        );
+
+
+        button.addEventListener(
+            "pointercancel",
+            function() {
+
+                state.keys[key] = false;
+
+            }
+        );
+
+    });
+
+
+/* =========================
+   PLAY BUTTON
+========================= */
+
+const startButton =
+    document.getElementById("start");
+
+
+startButton.addEventListener(
+    "click",
+    function() {
+
+        state.started = true;
+
+        document
+            .getElementById("overlay")
+            .style.display = "none";
+
+        document
+            .getElementById("hint")
+            .textContent =
+            "WASD move • E enter car • Shift run";
+
+    }
+);
+
+
+/* =========================
+   VEHICLE TOGGLE
 ========================= */
 
 function toggleVehicle() {
 
-  if (!state.started)
-    return;
-
-  if (state.inVehicle) {
-
-    state.inVehicle = false;
-
-    player.exitVehicle();
-
-    updateHint();
-
-    return;
-  }
+    if (!state.started)
+        return;
 
 
-  const nearest =
-    vehicles.findNearestVehicle(
-      player.group.position,
-      5
-    );
+    if (state.inVehicle) {
 
-  if (nearest) {
+        player.exitVehicle();
 
-    state.inVehicle = true;
+        state.inVehicle = false;
 
-    player.enterVehicle(
-      nearest
-    );
+        document
+            .getElementById("hint")
+            .textContent =
+            "WASD move • E enter car • Shift run";
 
-    updateHint();
+        return;
 
-  }
+    }
+
+
+    const nearest =
+        vehicles.findNearestVehicle(
+            player.group.position,
+            5
+        );
+
+
+    if (nearest) {
+
+        player.enterVehicle(
+            nearest
+        );
+
+        state.inVehicle = true;
+
+        document
+            .getElementById("hint")
+            .textContent =
+            "WASD drive • E exit";
+
+    }
 
 }
 
@@ -323,45 +351,67 @@ function toggleVehicle() {
 
 function updateHUD() {
 
-  document.getElementById(
-    "money"
-  ).textContent =
-    Math.floor(state.money);
+    document.getElementById("money")
+        .textContent =
+        Math.floor(state.money);
 
-  document.getElementById(
-    "health"
-  ).textContent =
-    Math.max(
-      0,
-      Math.floor(state.health)
-    );
+    document.getElementById("health")
+        .textContent =
+        Math.max(
+            0,
+            Math.floor(state.health)
+        );
 
-  document.getElementById(
-    "wanted"
-  ).textContent =
-    state.wanted;
+    document.getElementById("wanted")
+        .textContent =
+        Math.max(
+            0,
+            Math.floor(state.wanted)
+        );
 
 }
 
 
-function updateHint() {
+/* =========================
+   CAMERA
+========================= */
 
-  const hint =
-    document.getElementById(
-      "hint"
+function updateCamera() {
+
+    const target =
+        player.getCameraTarget();
+
+
+    const desired =
+        new THREE.Vector3();
+
+
+    desired.copy(
+        target.position
     );
 
-  if (state.inVehicle) {
 
-    hint.textContent =
-      "WASD drive • E exit vehicle";
+    desired.y += 6;
 
-  } else {
+    desired.z += 10;
 
-    hint.textContent =
-      "WASD move • E enter car • Shift sprint";
 
-  }
+    camera.position.lerp(
+        desired,
+        0.08
+    );
+
+
+    const lookAt =
+        target.position.clone();
+
+
+    lookAt.y += 1.4;
+
+
+    camera.lookAt(
+        lookAt
+    );
 
 }
 
@@ -370,172 +420,115 @@ function updateHint() {
    MINIMAP
 ========================= */
 
-const mapCanvas =
-  document.getElementById(
-    "map"
-  );
+const minimap =
+    document.getElementById(
+        "minimap"
+    );
 
-const mapContext =
-  mapCanvas.getContext(
-    "2d"
-  );
+const map =
+    minimap.getContext("2d");
 
 
-function drawMinimap() {
+function updateMinimap() {
 
-  const ctx =
-    mapContext;
+    const size = 160;
 
-  const size =
-    mapCanvas.width;
-
-  ctx.clearRect(
-    0,
-    0,
-    size,
-    size
-  );
-
-  ctx.fillStyle =
-    "#182018";
-
-  ctx.fillRect(
-    0,
-    0,
-    size,
-    size
-  );
+    map.clearRect(
+        0,
+        0,
+        size,
+        size
+    );
 
 
-  /* Roads */
+    map.fillStyle =
+        "#182018";
 
-  ctx.strokeStyle =
-    "#555";
-
-  ctx.lineWidth = 8;
-
-  const roadSpacing = 80;
-
-  for (
-    let i = -1000;
-    i <= 1000;
-    i += roadSpacing
-  ) {
-
-    const x =
-      size / 2 +
-      (
-        i -
-        player.group.position.x
-      ) * 0.7;
-
-    const y =
-      size / 2 +
-      (
-        i -
-        player.group.position.z
-      ) * 0.7;
+    map.fillRect(
+        0,
+        0,
+        size,
+        size
+    );
 
 
-    ctx.beginPath();
+    map.strokeStyle =
+        "#555";
 
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, size);
-
-    ctx.stroke();
+    map.lineWidth = 5;
 
 
-    ctx.beginPath();
+    for (
+        let i = -500;
+        i <= 500;
+        i += 80
+    ) {
 
-    ctx.moveTo(0, y);
-    ctx.lineTo(size, y);
-
-    ctx.stroke();
-
-  }
-
-
-  /* Player */
-
-  ctx.fillStyle =
-    "#ffffff";
-
-  ctx.beginPath();
-
-  ctx.arc(
-    size / 2,
-    size / 2,
-    5,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.fill();
-
-}
+        const x =
+            size / 2 +
+            (
+                i -
+                player.group.position.x
+            ) * 0.35;
 
 
-function updateCamera() {
-
-  const target =
-    player.getCameraTarget();
-
-  const desired =
-    new THREE.Vector3();
-
-  desired.copy(
-    target.position
-  );
-
-  desired.y +=
-    state.inVehicle
-      ? 7
-      : 6;
-
-  desired.z +=
-    state.inVehicle
-      ? 12
-      : 9;
+        const y =
+            size / 2 +
+            (
+                i -
+                player.group.position.z
+            ) * 0.35;
 
 
-  camera.position.lerp(
-    desired,
-    0.08
-  );
+        map.beginPath();
+
+        map.moveTo(
+            x,
+            0
+        );
+
+        map.lineTo(
+            x,
+            size
+        );
+
+        map.stroke();
 
 
-  const lookAt =
-    target.position.clone();
+        map.beginPath();
 
-  lookAt.y += 1.5;
+        map.moveTo(
+            0,
+            y
+        );
 
-  camera.lookAt(
-    lookAt
-  );
+        map.lineTo(
+            size,
+            y
+        );
 
-}
-
-
-/* =========================
-   START GAME
-========================= */
-
-document
-  .getElementById("start")
-  .addEventListener(
-    "click",
-    () => {
-
-      state.started = true;
-
-      document.getElementById(
-        "overlay"
-      ).style.display = "none";
-
-      updateHint();
+        map.stroke();
 
     }
-  );
+
+
+    map.fillStyle =
+        "white";
+
+
+    map.beginPath();
+
+    map.arc(
+        size / 2,
+        size / 2,
+        5,
+        0,
+        Math.PI * 2
+    );
+
+    map.fill();
+
+}
 
 
 /* =========================
@@ -543,21 +536,22 @@ document
 ========================= */
 
 window.addEventListener(
-  "resize",
-  () => {
+    "resize",
+    function() {
 
-    camera.aspect =
-      window.innerWidth /
-      window.innerHeight;
+        camera.aspect =
+            window.innerWidth /
+            window.innerHeight;
 
-    camera.updateProjectionMatrix();
+        camera.updateProjectionMatrix();
 
-    renderer.setSize(
-      window.innerWidth,
-      window.innerHeight
-    );
 
-  }
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+    }
 );
 
 
@@ -566,70 +560,74 @@ window.addEventListener(
 ========================= */
 
 const clock =
-  new THREE.Clock();
+    new THREE.Clock();
 
 
 function animate() {
 
-  requestAnimationFrame(
-    animate
-  );
-
-  const delta =
-    Math.min(
-      clock.getDelta(),
-      0.05
-    );
-
-  if (state.started) {
-
-    state.time += delta;
-
-
-    updatePlayer(
-      player,
-      state,
-      delta,
-      vehicles
+    requestAnimationFrame(
+        animate
     );
 
 
-    updateVehicles(
-      vehicles,
-      state,
-      delta,
-      player
+    const delta =
+        Math.min(
+            clock.getDelta(),
+            0.05
+        );
+
+
+    if (state.started) {
+
+        state.time += delta;
+
+
+        updatePlayer(
+            player,
+            state,
+            delta,
+            vehicles
+        );
+
+
+        updateVehicles(
+            vehicles,
+            state,
+            delta,
+            player
+        );
+
+
+        updateCity(
+            city,
+            state,
+            delta
+        );
+
+
+        updateMissions(
+            missions,
+            state,
+            delta,
+            player
+        );
+
+
+        updateCamera();
+
+        updateMinimap();
+
+        updateHUD();
+
+    }
+
+
+    renderer.render(
+        scene,
+        camera
     );
-
-
-    updateCity(
-      city,
-      state,
-      delta
-    );
-
-
-    updateMissions(
-      missions,
-      state,
-      delta,
-      player
-    );
-
-
-    updateCamera();
-
-    drawMinimap();
-
-    updateHUD();
-
-  }
-
-  renderer.render(
-    scene,
-    camera
-  );
 
 }
+
 
 animate();
